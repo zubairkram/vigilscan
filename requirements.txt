@@ -1,0 +1,10 @@
+# VigilScan requires zero external dependencies!
+# Built 100% on Python 3 standard library modules:
+# - socket
+# - ssl
+# - concurrent.futures
+# - ipaddress
+# - dataclasses
+# - argparse
+# - json
+# - datetime

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VigilScan Audit Report - corp-gateway.demo.local</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-surface: #111827;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-cyan: #38bdf8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .logo-box {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #0284c7, #06b6d4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+        .brand h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .brand p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .scan-meta {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .scan-meta strong {
+            color: var(--text-primary);
+        }
+
+        /* Executive Overview */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 768px) {
+            .overview-grid { grid-template-columns: 1fr; }
+        }
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+        .card-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .score-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .gauge-svg {
+            width: 140px;
+            height: 140px;
+        }
+        .gauge-bg {
+            fill: none;
+            stroke: #1e293b;
+            stroke-width: 8;
+        }
+        .gauge-fill {
+            fill: none;
+            stroke: #ef4444;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283.0;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+        .score-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            fill: var(--text-primary);
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+        .score-desc {
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ef4444;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            height: 100%;
+        }
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .stat-box {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-box .count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        .stat-box .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge-critical { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .badge-high { background: rgba(249, 115, 22, 0.2); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.4); }
+        .badge-medium { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .badge-low { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+        .badge-open { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        th {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Vulnerabilities Section */
+        .vuln-card {
+            background: var(--bg-card);
+            border-left: 4px solid var(--border);
+            border-radius: 0 8px 8px 0;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .vuln-card:has(.badge-critical) { border-left-color: var(--accent-red); }
+        .vuln-card:has(.badge-high) { border-left-color: #f97316; }
+        .vuln-card:has(.badge-medium) { border-left-color: var(--accent-yellow); }
+        .vuln-card:has(.badge-low) { border-left-color: #3b82f6; }
+        
+        .vuln-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .vuln-port {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 0 0.5rem;
+            font-family: monospace;
+        }
+        .vuln-title {
+            font-size: 1rem;
+        }
+        .vuln-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .vuln-cwe {
+            font-size: 0.8rem;
+            color: #38bdf8;
+            font-family: monospace;
+            margin-bottom: 0.5rem;
+        }
+        .vuln-desc {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 0.75rem;
+        }
+        .remediation-box {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(51, 65, 85, 0.4);
+            font-size: 0.85rem;
+        }
+        .rem-title {
+            font-weight: 600;
+            color: #34d399;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Info Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .info-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-group .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        .info-group .val {
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+            word-break: break-all;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="brand">
+                <div class="logo-box">V</div>
+                <div>
+                    <h1>VigilScan Security Audit</h1>
+                    <p>Network Vulnerability Scanner & Risk Assessment Engine</p>
+                </div>
+            </div>
+            <div class="scan-meta">
+                <div>Target: <strong>corp-gateway.demo.local</strong> (192.168.10.45)</div>
+                <div>Timestamp: <strong>2026-10-29 09:53:01 UTC</strong></div>
+                <div>Duration: <strong>1.45s</strong></div>
+            </div>
+        </header>
+
+        <!-- Executive Overview -->
+        <div class="overview-grid">
+            <div class="card score-card">
+                <div class="card-title">Security Posture Score</div>
+                <svg class="gauge-svg" viewBox="0 0 100 100">
+                    <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+                    <circle class="gauge-fill" cx="50" cy="50" r="45"></circle>
+                    <text class="score-text" x="50" y="52">0</text>
+                </svg>
+                <div class="score-desc">CRITICAL RISK</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Risk Findings Breakdown (Certiport Domain 4.3)</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="count" style="color: var(--accent-red);">0</div>
+                        <div class="label">Critical</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="count" style="color: #f97316;">5</div>
+                        <div class="label">High</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="count" style="color: var(--accent-yellow);">3</div>
+                        <div class="label">Medium</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="count" style="color: #60a5fa;">3</div>
+                        <div class="label">Low / Info</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Open Ports Table -->
+        <div class="card">
+            <div class="card-title">Discovered Ports & Network Services (7 Open)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Port / Proto</th>
+                        <th>State</th>
+                        <th>Service Identification</th>
+                        <th>Latency</th>
+                        <th>Service Banner / Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+        <tr>
+            <td style="font-weight: 600; color: #38bdf8;">21/TCP</td>
+            <td><span class="badge badge-open">OPEN</span></td>
+            <td>FTP (File Transfer)</td>
+            <td style="color: #94a3b8;">12.4 ms</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: #cbd5e1;">220 (vsFTPd 3.0.3) ready.</td>
+        </tr>
+        
+        <tr>
+            <td style="font-weight: 600; color: #38bdf8;">22/TCP</td>
+            <td><span class="badge badge-open">OPEN</span></td>
+            <td>SSH (Secure Shell)</td>
+            <td style="color: #94a3b8;">9.1 ms</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: #cbd5e1;">SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.5</td>
+        </tr>
+        
+        <tr>
+            <td style="font-weight: 600; color: #38bdf8;">23/TCP</td>
+            <td><span class="badge badge-open">OPEN</span></td>
+            <td>Telnet (Unencrypted CLI)</td>
+            <td style="color: #94a3b8;">15.2 ms</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: #cbd5e1;">Linux Telnet Service (Insecure)</td>
+        </tr>
+        
+        <tr>
+            <td style="font-weight: 600; color: #38bdf8;">80/TCP</td>
+            <td><span class="badge badge-open">OPEN</span></td>
+            <td>HTTP (Web Traffic)</td>
+            <td style="color: #94a3b8;">8.5 ms</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: #cbd5e1;">HTTP/1.1 200 OK | Server: Apache/2.4.41 (Ubuntu)</td>
+        </tr>
+        
+        <tr>
+            <td style="font-weight: 600; color: #38bdf8;">443/TCP</td>
+            <td><span class="badge badge-open">OPEN</span></td>
+            <td>HTTPS (Encrypted Web)</td>
+            <td style="color: #94a3b8;">14.8 ms</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: #cbd5e1;">HTTP/1.1 200 OK | Server: Apache/2.4.41 (Ubuntu)</td>
+        </tr>
+        
+        <tr>
+            <td style="font-weight: 600; color: #38bdf8;">3306/TCP</td>
+            <td><span class="badge badge-open">OPEN</span></td>
+            <td>MySQL Database</td>
+            <td style="color: #94a3b8;">18.0 ms</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: #cbd5e1;">5.7.33-0ubuntu0.18.04.1</td>
+        </tr>
+        
+        <tr>
+            <td style="font-weight: 600; color: #38bdf8;">3389/TCP</td>
+            <td><span class="badge badge-open">OPEN</span></td>
+            <td>RDP (Remote Desktop)</td>
+            <td style="color: #94a3b8;">22.3 ms</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: #cbd5e1;">MS Remote Desktop Terminal Server</td>
+        </tr>
+        
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-title">SSL/TLS Cryptographic Audit (Certiport Domain 1.4)</div>
+            <div class="grid-2">
+                <div class="info-group">
+                    <span class="label">Certificate Status</span>
+                    <span class="val"><span class="badge badge-critical">EXPIRED</span> (-288 days remaining)</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Negotiated Protocol</span>
+                    <span class="val" style="color: #38bdf8; font-weight: 600;">TLSv1.1</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Cipher Suite</span>
+                    <span class="val" style="font-family: monospace;">ECDHE-RSA-AES256-SHA</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Certificate Subject</span>
+                    <span class="val">gateway.internal.corp</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Certificate Issuer</span>
+                    <span class="val">gateway.internal.corp</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Valid Until</span>
+                    <span class="val">Jan 15 00:00:00 2025 GMT</span>
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- Vulnerabilities & Mitigation -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-title">Vulnerability Assessment & Mitigation Guidelines (11 Identified)</div>
+            
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-high">HIGH</span>
+                    <span class="vuln-port">Port 23</span>
+                    <strong class="vuln-title">Legacy Telnet Protocol Exposed (High Risk)</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>7.5</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-319 (Cleartext Transmission of Sensitive Information)</div>
+            <p class="vuln-desc">Telnet operates without any cryptographic protection. All keystrokes, administrative credentials, and session data can be intercepted via passive sniffing or ARP poisoning.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Decommission the Telnet daemon immediately. Replace with Secure Shell (SSHv2) on port 22 with key-based authentication.</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-high">HIGH</span>
+                    <span class="vuln-port">Port 3306</span>
+                    <strong class="vuln-title">Exposed MySQL Database Port</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>7.5</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-284 (Improper Access Control)</div>
+            <p class="vuln-desc">MySQL database port 3306 is listening on an external interface. Database ports should never be exposed to public networks due to automated brute-force attacks.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Bind MySQL service to localhost (127.0.0.1) or private VPC subnet. Enforce strict firewall rules restricting access to trusted app servers.</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-high">HIGH</span>
+                    <span class="vuln-port">Port 3389</span>
+                    <strong class="vuln-title">Exposed Microsoft Remote Desktop (RDP)</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>7.3</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-306 (Missing Authentication for Critical Function)</div>
+            <p class="vuln-desc">Remote Desktop Protocol (RDP) is directly exposed. Exposed RDP endpoints are prime targets for automated credential stuffing, brute force, and exploits (e.g., BlueKeep).</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Place RDP behind a secure VPN gateway or Remote Desktop Gateway with Multi-Factor Authentication (MFA). Enable Network Level Authentication (NLA).</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-high">HIGH</span>
+                    <span class="vuln-port">Port 443</span>
+                    <strong class="vuln-title">Expired SSL/TLS Digital Certificate</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>7.4</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-298 (Improper Validation of Certificate Expiration)</div>
+            <p class="vuln-desc">The server presents an expired certificate that expired on Jan 15 00:00:00 2025 GMT. Web browsers will display security warnings, and user trust is compromised.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Renew and deploy an active certificate immediately from a recognized Certificate Authority (CA).</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-high">HIGH</span>
+                    <span class="vuln-port">Port 443</span>
+                    <strong class="vuln-title">Deprecated Insecure TLS Protocol Version</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>7.5</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-326 (Inadequate Encryption Strength)</div>
+            <p class="vuln-desc">Deprecated TLS protocol negotiated: TLSv1.1 (Vulnerable to POODLE/BEAST).</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Disable legacy TLSv1.0 and TLSv1.1 on the server web server/load balancer. Enforce TLSv1.2 and TLSv1.3.</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-medium">MEDIUM</span>
+                    <span class="vuln-port">Port 21</span>
+                    <strong class="vuln-title">Unencrypted FTP Protocol Exposed</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>5.3</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-319 (Cleartext Transmission of Sensitive Information)</div>
+            <p class="vuln-desc">Port 21 provides standard File Transfer Protocol (FTP) which transmits usernames, passwords, and data in unencrypted plaintext across the network.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Disable legacy FTP service and migrate to SFTP (over SSH) or FTPS with mandatory TLS encryption.</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-medium">MEDIUM</span>
+                    <span class="vuln-port">Port 443</span>
+                    <strong class="vuln-title">Self-Signed SSL/TLS Certificate In Use</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>5.9</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-295 (Improper Certificate Validation)</div>
+            <p class="vuln-desc">The certificate issuer matches the subject, indicating a self-signed certificate not rooted in a trusted public PKI trust store.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Replace with a certificate signed by an established Certificate Authority (e.g. Let's Encrypt, DigiCert).</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-medium">MEDIUM</span>
+                    <span class="vuln-port">Port 80</span>
+                    <strong class="vuln-title">Missing HTTP Strict Transport Security (HSTS) Header</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>4.3</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-319 (Cleartext Transmission of Sensitive Information)</div>
+            <p class="vuln-desc">The server does not send the Strict-Transport-Security header. Browsers may connect over plain HTTP on their first request, exposing users to SSL-stripping.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Configure 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload' in web server config.</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-low">LOW</span>
+                    <span class="vuln-port">Port 80</span>
+                    <strong class="vuln-title">Missing Content-Security-Policy (CSP) Header</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>3.8</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-79 (Improper Neutralization of Input During Web Page Generation)</div>
+            <p class="vuln-desc">A Content Security Policy header was not detected. CSP is a defense-in-depth mechanism that prevents unauthorized script execution and data theft.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Define and deploy a strict Content-Security-Policy header restricting script-src, object-src, and default-src directives.</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-low">LOW</span>
+                    <span class="vuln-port">Port 80</span>
+                    <strong class="vuln-title">Missing Anti-Clickjacking Header (X-Frame-Options)</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>3.5</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-1021 (Improper Restriction of Rendered UI Layers or Frames)</div>
+            <p class="vuln-desc">The application does not specify X-Frame-Options or frame-ancestors, permitting third-party sites to frame the application for clickjacking attacks.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Add 'X-Frame-Options: SAMEORIGIN' or 'DENY' header to HTTP responses.</p>
+            </div>
+        </div>
+        
+        <div class="vuln-card">
+            <div class="vuln-header">
+                <div>
+                    <span class="badge badge-low">LOW</span>
+                    <span class="vuln-port">Port 80</span>
+                    <strong class="vuln-title">Web Server Version Information Disclosure</strong>
+                </div>
+                <div class="vuln-meta">CVSS Est: <strong>2.6</strong></div>
+            </div>
+            <div class="vuln-cwe">CWE-200 (Exposure of Sensitive Information)</div>
+            <p class="vuln-desc">The web server exposes its exact software version in the Server header: 'Apache/2.4.41 (Ubuntu)'. This assists attackers during reconnaissance.</p>
+            <div class="remediation-box">
+                <div class="rem-title">Recommended Remediation:</div>
+                <p>Configure ServerTokens Prod (Apache) or server_tokens off (Nginx) to suppress detailed version banners.</p>
+            </div>
+        </div>
+        
+        </div>
+
+        <footer>
+            Generated automatically by <strong>VigilScan v1.0.0</strong> • Aligned with Certiport IT Specialist: Cybersecurity Exam Objectives (Domains 1, 2, 4).
+        </footer>
+    </div>
+</body>
+</html>

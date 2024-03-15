@@ -1,0 +1,222 @@
+{
+  "target": "corp-gateway.demo.local",
+  "ip_address": "192.168.10.45",
+  "scan_timestamp": "2026-10-29 09:53:01 UTC",
+  "duration_seconds": 1.45,
+  "total_ports_scanned": 25,
+  "open_ports": [
+    {
+      "port": 21,
+      "protocol": "tcp",
+      "state": "open",
+      "service_name": "FTP (File Transfer)",
+      "banner": "220 (vsFTPd 3.0.3) ready.",
+      "response_time_ms": 12.4
+    },
+    {
+      "port": 22,
+      "protocol": "tcp",
+      "state": "open",
+      "service_name": "SSH (Secure Shell)",
+      "banner": "SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.5",
+      "response_time_ms": 9.1
+    },
+    {
+      "port": 23,
+      "protocol": "tcp",
+      "state": "open",
+      "service_name": "Telnet (Unencrypted CLI)",
+      "banner": "Linux Telnet Service (Insecure)",
+      "response_time_ms": 15.2
+    },
+    {
+      "port": 80,
+      "protocol": "tcp",
+      "state": "open",
+      "service_name": "HTTP (Web Traffic)",
+      "banner": "HTTP/1.1 200 OK | Server: Apache/2.4.41 (Ubuntu)",
+      "response_time_ms": 8.5
+    },
+    {
+      "port": 443,
+      "protocol": "tcp",
+      "state": "open",
+      "service_name": "HTTPS (Encrypted Web)",
+      "banner": "HTTP/1.1 200 OK | Server: Apache/2.4.41 (Ubuntu)",
+      "response_time_ms": 14.8
+    },
+    {
+      "port": 3306,
+      "protocol": "tcp",
+      "state": "open",
+      "service_name": "MySQL Database",
+      "banner": "5.7.33-0ubuntu0.18.04.1",
+      "response_time_ms": 18.0
+    },
+    {
+      "port": 3389,
+      "protocol": "tcp",
+      "state": "open",
+      "service_name": "RDP (Remote Desktop)",
+      "banner": "MS Remote Desktop Terminal Server",
+      "response_time_ms": 22.3
+    }
+  ],
+  "tls_audit": {
+    "has_tls": true,
+    "subject": "gateway.internal.corp",
+    "issuer": "gateway.internal.corp",
+    "valid_from": "Jan 15 00:00:00 2024 GMT",
+    "valid_to": "Jan 15 00:00:00 2025 GMT",
+    "days_remaining": -288,
+    "is_expired": true,
+    "is_expiring_soon": false,
+    "is_self_signed": true,
+    "tls_version": "TLSv1.1",
+    "cipher_name": "ECDHE-RSA-AES256-SHA",
+    "san_list": [
+      "gateway.internal.corp",
+      "vpn.internal.corp"
+    ],
+    "findings": [
+      "Certificate expired on Jan 15 00:00:00 2025 GMT (288 days ago).",
+      "Self-signed SSL/TLS certificate detected (Untrusted CA).",
+      "Deprecated TLS protocol negotiated: TLSv1.1 (Vulnerable to POODLE/BEAST)."
+    ]
+  },
+  "http_audit": {
+    "status_code": 200,
+    "server_header": "Apache/2.4.41 (Ubuntu)",
+    "powered_by_header": "PHP/7.4.3",
+    "missing_headers": [
+      "Strict-Transport-Security",
+      "Content-Security-Policy",
+      "X-Frame-Options"
+    ],
+    "present_headers": {
+      "Server": "Apache/2.4.41 (Ubuntu)",
+      "X-Powered-By": "PHP/7.4.3"
+    },
+    "findings": [
+      "Server banner exposed: 'Apache/2.4.41 (Ubuntu)' (Assists attacker fingerprinting).",
+      "Technology disclosure: 'X-Powered-By: PHP/7.4.3'.",
+      "Missing security header: Strict-Transport-Security",
+      "Missing security header: Content-Security-Policy",
+      "Missing security header: X-Frame-Options"
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "vuln_id": "VULN-PORT-23",
+      "title": "Legacy Telnet Protocol Exposed (High Risk)",
+      "severity": "HIGH",
+      "cwe_id": "CWE-319 (Cleartext Transmission of Sensitive Information)",
+      "port": 23,
+      "description": "Telnet operates without any cryptographic protection. All keystrokes, administrative credentials, and session data can be intercepted via passive sniffing or ARP poisoning.",
+      "remediation": "Decommission the Telnet daemon immediately. Replace with Secure Shell (SSHv2) on port 22 with key-based authentication.",
+      "cvss_estimate": 7.5
+    },
+    {
+      "vuln_id": "VULN-PORT-3306",
+      "title": "Exposed MySQL Database Port",
+      "severity": "HIGH",
+      "cwe_id": "CWE-284 (Improper Access Control)",
+      "port": 3306,
+      "description": "MySQL database port 3306 is listening on an external interface. Database ports should never be exposed to public networks due to automated brute-force attacks.",
+      "remediation": "Bind MySQL service to localhost (127.0.0.1) or private VPC subnet. Enforce strict firewall rules restricting access to trusted app servers.",
+      "cvss_estimate": 7.5
+    },
+    {
+      "vuln_id": "VULN-PORT-3389",
+      "title": "Exposed Microsoft Remote Desktop (RDP)",
+      "severity": "HIGH",
+      "cwe_id": "CWE-306 (Missing Authentication for Critical Function)",
+      "port": 3389,
+      "description": "Remote Desktop Protocol (RDP) is directly exposed. Exposed RDP endpoints are prime targets for automated credential stuffing, brute force, and exploits (e.g., BlueKeep).",
+      "remediation": "Place RDP behind a secure VPN gateway or Remote Desktop Gateway with Multi-Factor Authentication (MFA). Enable Network Level Authentication (NLA).",
+      "cvss_estimate": 7.3
+    },
+    {
+      "vuln_id": "VULN-TLS-EXPIRED",
+      "title": "Expired SSL/TLS Digital Certificate",
+      "severity": "HIGH",
+      "cwe_id": "CWE-298 (Improper Validation of Certificate Expiration)",
+      "port": 443,
+      "description": "The server presents an expired certificate that expired on Jan 15 00:00:00 2025 GMT. Web browsers will display security warnings, and user trust is compromised.",
+      "remediation": "Renew and deploy an active certificate immediately from a recognized Certificate Authority (CA).",
+      "cvss_estimate": 7.4
+    },
+    {
+      "vuln_id": "VULN-TLS-DEPRECATED",
+      "title": "Deprecated Insecure TLS Protocol Version",
+      "severity": "HIGH",
+      "cwe_id": "CWE-326 (Inadequate Encryption Strength)",
+      "port": 443,
+      "description": "Deprecated TLS protocol negotiated: TLSv1.1 (Vulnerable to POODLE/BEAST).",
+      "remediation": "Disable legacy TLSv1.0 and TLSv1.1 on the server web server/load balancer. Enforce TLSv1.2 and TLSv1.3.",
+      "cvss_estimate": 7.5
+    },
+    {
+      "vuln_id": "VULN-PORT-21",
+      "title": "Unencrypted FTP Protocol Exposed",
+      "severity": "MEDIUM",
+      "cwe_id": "CWE-319 (Cleartext Transmission of Sensitive Information)",
+      "port": 21,
+      "description": "Port 21 provides standard File Transfer Protocol (FTP) which transmits usernames, passwords, and data in unencrypted plaintext across the network.",
+      "remediation": "Disable legacy FTP service and migrate to SFTP (over SSH) or FTPS with mandatory TLS encryption.",
+      "cvss_estimate": 5.3
+    },
+    {
+      "vuln_id": "VULN-TLS-SELFSIGNED",
+      "title": "Self-Signed SSL/TLS Certificate In Use",
+      "severity": "MEDIUM",
+      "cwe_id": "CWE-295 (Improper Certificate Validation)",
+      "port": 443,
+      "description": "The certificate issuer matches the subject, indicating a self-signed certificate not rooted in a trusted public PKI trust store.",
+      "remediation": "Replace with a certificate signed by an established Certificate Authority (e.g. Let's Encrypt, DigiCert).",
+      "cvss_estimate": 5.9
+    },
+    {
+      "vuln_id": "VULN-HTTP-HSTS",
+      "title": "Missing HTTP Strict Transport Security (HSTS) Header",
+      "severity": "MEDIUM",
+      "cwe_id": "CWE-319 (Cleartext Transmission of Sensitive Information)",
+      "port": 80,
+      "description": "The server does not send the Strict-Transport-Security header. Browsers may connect over plain HTTP on their first request, exposing users to SSL-stripping.",
+      "remediation": "Configure 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload' in web server config.",
+      "cvss_estimate": 4.3
+    },
+    {
+      "vuln_id": "VULN-HTTP-CSP",
+      "title": "Missing Content-Security-Policy (CSP) Header",
+      "severity": "LOW",
+      "cwe_id": "CWE-79 (Improper Neutralization of Input During Web Page Generation)",
+      "port": 80,
+      "description": "A Content Security Policy header was not detected. CSP is a defense-in-depth mechanism that prevents unauthorized script execution and data theft.",
+      "remediation": "Define and deploy a strict Content-Security-Policy header restricting script-src, object-src, and default-src directives.",
+      "cvss_estimate": 3.8
+    },
+    {
+      "vuln_id": "VULN-HTTP-CLICKJACK",
+      "title": "Missing Anti-Clickjacking Header (X-Frame-Options)",
+      "severity": "LOW",
+      "cwe_id": "CWE-1021 (Improper Restriction of Rendered UI Layers or Frames)",
+      "port": 80,
+      "description": "The application does not specify X-Frame-Options or frame-ancestors, permitting third-party sites to frame the application for clickjacking attacks.",
+      "remediation": "Add 'X-Frame-Options: SAMEORIGIN' or 'DENY' header to HTTP responses.",
+      "cvss_estimate": 3.5
+    },
+    {
+      "vuln_id": "VULN-HTTP-BANNER",
+      "title": "Web Server Version Information Disclosure",
+      "severity": "LOW",
+      "cwe_id": "CWE-200 (Exposure of Sensitive Information)",
+      "port": 80,
+      "description": "The web server exposes its exact software version in the Server header: 'Apache/2.4.41 (Ubuntu)'. This assists attackers during reconnaissance.",
+      "remediation": "Configure ServerTokens Prod (Apache) or server_tokens off (Nginx) to suppress detailed version banners.",
+      "cvss_estimate": 2.6
+    }
+  ],
+  "security_score": 0,
+  "risk_rating": "CRITICAL"
+}
