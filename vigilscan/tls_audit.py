@@ -1,8 +1,7 @@
 """
 SSL/TLS Cryptographic Security Auditor.
-Directly maps to Certiport Objective 1.4:
-- Encryption types, PKI, digital certificates
-- Strong vs. weak encryption algorithms and protocols (data in transit)
+Validates digital certificates, PKI trust chains, expiration windows,
+and detects weak or deprecated cipher suites in transit.
 """
 
 import ssl

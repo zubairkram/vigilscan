@@ -1,9 +1,7 @@
 """
 Vulnerability and Risk Assessment Engine.
-Directly implements Certiport Domain 4: Vulnerability Assessment & Risk Management.
-- 4.1 Vulnerability identification & mitigation
-- 4.2 Threat intelligence & CVE/CWE categorization
-- 4.3 Risk ranking (Critical, High, Medium, Low) & mitigation strategies
+Implements CVSS-aligned risk ranking, CWE categorizations,
+and actionable remediation guidelines for network exposures.
 """
 
 from typing import List, Tuple

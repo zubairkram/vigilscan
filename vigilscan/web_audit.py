@@ -1,7 +1,6 @@
 """
 HTTP/HTTPS Web Security Header & Configuration Auditor.
 Audits web services for missing hardening headers and information leakage.
-Aligned with Certiport Objective 2.1 (HTTP) and Objective 4.1 (Vulnerability ID).
 """
 
 import socket
