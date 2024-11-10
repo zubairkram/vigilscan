@@ -1,7 +1,7 @@
 {
   "target": "corp-gateway.demo.local",
   "ip_address": "192.168.10.45",
-  "scan_timestamp": "2026-10-29 09:53:01 UTC",
+  "scan_timestamp": "2026-10-29 10:27:27 UTC",
   "duration_seconds": 1.45,
   "total_ports_scanned": 25,
   "open_ports": [

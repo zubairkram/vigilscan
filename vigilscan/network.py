@@ -1,6 +1,6 @@
 """
 Network discovery, socket scanning, and port parsing module.
-Covers Certiport Domain 2: Basic Network Security Concepts (TCP/UDP, Ports, CIDR, IP).
+Implements concurrent TCP connection probing and CIDR subnet expansion.
 """
 
 import socket

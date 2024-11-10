@@ -1,39 +1,38 @@
 # VigilScan 🛡️
 ### Lightweight Network Vulnerability Scanner & Security Posture Auditor
-> **Directly Aligned with Certiport IT Specialist: Cybersecurity Exam Objectives**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![Dependencies: Zero](https://img.shields.io/badge/dependencies-0%20(Standard%20Library)-success.svg)]()
 [![Tests: 10 Passed](https://img.shields.io/badge/tests-10%2F10%20passed-brightgreen.svg)]()
-[![Certiport Aligned](https://img.shields.io/badge/Certiport-IT%20Specialist-orange.svg)]()
+[![Security: Enterprise Grade](https://img.shields.io/badge/security-CIS%20%26%20NIST%20Aligned-orange.svg)]()
 
 **VigilScan** is a high-performance, modular network vulnerability scanner and cryptographic posture auditor written in pure Python with **zero external dependencies**. 
 
-Engineered specifically around the **Certiport IT Specialist: Cybersecurity Certification Syllabus**, VigilScan transforms low-level network reconnaissance into executive-level risk intelligence, producing both machine-readable JSON data and an interactive, dark-themed HTML Security Dashboard.
+Designed for systems administrators, penetration testers, and security engineers, VigilScan transforms low-level network socket reconnaissance into executive-level risk intelligence, producing machine-readable JSON data and an interactive, standalone HTML Security Dashboard.
 
 ---
 
-## 📋 Certiport Exam Objectives Alignment
+## ⚡ Core Capabilities & Security Standards
 
-VigilScan was designed to demonstrate direct, practical implementation of the competencies outlined in the Certiport IT Specialist Cybersecurity standard:
+VigilScan evaluates hosts against modern network hardening baselines (NIST CSF PR.AC, CIS Benchmarks, and RFC specifications):
 
-| Certiport Exam Objective | Objective Description | VigilScan Implementation |
+| Assessment Category | Industry Baseline | VigilScan Implementation |
 | :--- | :--- | :--- |
-| **Domain 1.4: Encryption Methods & Applications** | Types of encryption, certificates, PKI, strong vs. weak algorithms, data in transit. | Performs deep SSL/TLS handshakes, validates CA trust, detects expired & self-signed certs, flags deprecated protocols (TLSv1.0/1.1), and flags weak cipher suites. |
-| **Domain 2.1: TCP/IP Protocol Vulnerabilities** | TCP, UDP, HTTP, DNS, plain-text protocol risks. | Identifies risky cleartext protocols (Telnet, FTP, HTTP, NetBIOS, unencrypted DBs) and assesses cleartext data leakage. |
-| **Domain 2.2: Network Addresses & Segmentation** | IPv4/IPv6, MAC, CIDR notation, public vs private. | Native CIDR parsing (`/24`, `/28`), IP resolution, and multi-host subnet scanning. |
-| **Domain 4.1: Vulnerability Management** | Active reconnaissance, port scanning, service automation. | Multi-threaded TCP socket engine with sub-millisecond response timing and banner grabbing. |
-| **Domain 4.2: Threat Intelligence & Reporting** | Common Vulnerabilities and Exposures (CVEs), CWE mappings, structured reports. | Matches exposed services against CWE classifications and CVSS v3.1 score estimates. |
-| **Domain 4.3: Risk Management** | Vulnerability vs risk, ranking risks (Critical/High/Med/Low), mitigation strategies. | Dynamic scoring engine (0-100 Posture Score) with prioritized, step-by-step remediation guidance. |
+| **Cryptographic Posture & PKI** | RFC 8446 / NIST SP 800-52r2 | Performs deep SSL/TLS handshakes, validates CA trust, detects expired & self-signed certs, flags deprecated protocols (TLSv1.0/1.1), and audits weak cipher suites. |
+| **Cleartext Protocol Risks** | CIS Control 4.1 / RFC 959 | Identifies exposed plaintext legacy protocols (Telnet, FTP, HTTP, NetBIOS, unencrypted DBs) vulnerable to eavesdropping and credential theft. |
+| **Network Attack Surface Mapping** | CIDR / Subnet Auditing | Native CIDR parsing (`/24`, `/28`), IP resolution, and multi-host subnet scanning with sub-millisecond response timing. |
+| **Service Fingerprinting** | Active Reconnaissance | Concurrent TCP connection engine that captures service banners across HTTP, SSH, FTP, SMTP, MySQL, and Redis. |
+| **Vulnerability & CVE Mapping** | MITRE CWE / CVSS v3.1 | Correlates discovered exposures with Common Weakness Enumeration (CWE) classifications and calculates normalized severity scores. |
+| **Risk Scoring & Posture Rating** | Quantitative Risk Modeling | Calculates a dynamic **0–100 Security Posture Score** and produces prioritized remediation guidance for DevOps and SecOps teams. |
 
 ---
 
 ## ✨ Key Features
 
-- **Zero Third-Party Dependencies:** Runs anywhere Python 3.8+ is installed using only standard library modules (`socket`, `ssl`, `concurrent.futures`, `ipaddress`, `dataclasses`).
+- **Zero Third-Party Dependencies:** Runs anywhere Python 3.8+ is installed using standard library modules only (`socket`, `ssl`, `concurrent.futures`, `ipaddress`, `dataclasses`).
 - **Concurrent High-Speed Engine:** Multi-threaded worker pool capable of scanning common ports in under 2 seconds.
-- **Protocol Fingerprinting & Banner Grabbing:** Probes HTTP/HTTPS, SSH, FTP, SMTP, MySQL, and Redis services to capture service versions.
+- **Protocol Fingerprinting & Banner Grabbing:** Probes HTTP/HTTPS, SSH, FTP, SMTP, MySQL, and Redis services to capture exact software versions.
 - **Deep SSL/TLS Cryptographic Audit:**
   - Validates certificate expiration dates and days remaining.
   - Detects self-signed certificates (untrusted root CA).
@@ -63,8 +62,8 @@ vigilscan/
 │   ├── models.py               # Typed dataclasses (PortResult, TlsAuditResult, Vulnerability)
 │   ├── network.py              # Socket connection pool, CIDR expansion, port parser
 │   ├── banner.py               # Protocol banner grabbing & service identification
-│   ├── tls_audit.py            # SSL/TLS certificate & cryptographic auditor (Domain 1.4)
-│   ├── web_audit.py            # HTTP security headers analyzer (Domain 2.1 & 4.1)
+│   ├── tls_audit.py            # SSL/TLS certificate & cryptographic auditor
+│   ├── web_audit.py            # HTTP security headers analyzer
 │   ├── risk_engine.py          # Vulnerability knowledgebase, CWE mapping & risk scoring
 │   ├── reporter.py             # ANSI CLI formatter, JSON exporter & HTML report generator
 │   └── core.py                 # Audit coordinator orchestrator
@@ -151,7 +150,7 @@ PORT    STATE     SERVICE                     LATENCY     BANNER
 3306    open      MySQL Database              18.0ms      5.7.33-0ubuntu0.18.04.1
 3389    open      RDP (Remote Desktop)        22.3ms      MS Remote Desktop
 
-SSL/TLS CRYPTOGRAPHIC STATUS (Certiport 1.4):
+SSL/TLS CRYPTOGRAPHIC POSTURE & PKI AUDIT:
   Negotiated Protocol: TLSv1.1
   Cipher Suite:        ECDHE-RSA-AES256-SHA
   Certificate Subject: gateway.internal.corp
@@ -159,7 +158,7 @@ SSL/TLS CRYPTOGRAPHIC STATUS (Certiport 1.4):
   Expiration Date:     Jan 15 00:00:00 2025 GMT (-288 days remaining)
   [!] CRITICAL: Certificate is EXPIRED!
 
-SECURITY FINDINGS & RISK RANKINGS (Certiport 4.3):
+SECURITY FINDINGS & RISK CLASSIFICATIONS:
   [HIGH] Legacy Telnet Protocol Exposed (Port: 23, CVSS: 7.5)
     Classification: CWE-319 (Cleartext Transmission of Sensitive Information)
     Remediation:    Decommission Telnet. Migrate to SSHv2 with key-based authentication.
@@ -169,14 +168,6 @@ SECURITY FINDINGS & RISK RANKINGS (Certiport 4.3):
   ...
 [+] HTML Security Dashboard generated: reports/demo_audit_report.html
 ```
-
-### Standalone HTML Dashboard Preview
-The generated HTML dashboard includes:
-- **Interactive SVG Circular Gauge:** Visualizes target posture score (0-100).
-- **Executive Metric Cards:** Displays counts for Critical, High, Medium, and Low severity items.
-- **Network Port Map:** Clean table with port status, protocol, service, latency, and banner info.
-- **SSL/TLS Health Panel:** Certificate validity dates, issuer, subject, protocol version, and ciphers.
-- **Detailed Remediation Cards:** Step-by-step hardening instructions and CWE classifications.
 
 ---
 
@@ -209,14 +200,13 @@ OK
 
 ---
 
-## 🗺️ Certiport Cybersecurity Portfolio Roadmap
+## 🗺️ Cybersecurity Portfolio Suite
 
-This repository is **Project 1** in a multi-project cybersecurity portfolio aligned with the Certiport IT Specialist curriculum:
+This project is part of a 3-part open-source security tool suite:
 
-1. **Project 1 (This Repository): VigilScan** — Network Vulnerability Scanner & SSL/TLS Audit Engine *(Domains 1.4, 2.1, 2.2, 4.1, 4.2, 4.3)*
-2. **Project 2: TraceGuard SIEM** — Lightweight Syslog Analyzer & MITRE ATT&CK Threat Detector *(Domains 1.2, 3.5, 5.1, 5.2)*
-3. **Project 3: AuditArmor** — Endpoint Security & Host Hardening Compliance Auditor *(Domains 1.3, 3.1, 3.2, 3.3, 3.4)*
-4. **Project 4: CryptoVault-CLI** — PKI, Data-at-Rest/Transit Encryption & File Integrity Verifier *(Domains 1.1, 1.4)*
+1. **[VigilScan (Python)](https://github.com/zubairkram/vigilscan)** — Network Vulnerability Scanner & SSL/TLS Audit Engine
+2. **[TraceGuard SIEM (Python)](https://github.com/zubairkram/traceguard)** — Lightweight Log Analyzer & MITRE ATT&CK Threat Detector
+3. **[TokenSentry (JavaScript)](https://github.com/zubairkram/tokensentry)** — JWT & API Security Exploitation & Auditing Toolkit
 
 ---
 

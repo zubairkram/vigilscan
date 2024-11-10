@@ -1,6 +1,6 @@
 """
 VigilScan - Lightweight Network Vulnerability Scanner & Posture Auditor
-Aligned with Certiport IT Specialist: Cybersecurity Exam Objectives
+Engineered for Network Defense, Reconnaissance, and Security Auditing
 """
 
 __version__ = "1.0.0"

@@ -39,7 +39,7 @@ def print_cli_banner():
               __/ |                            
              |___/                             
 {COLOR_RESET}{COLOR_GRAY} Network Vulnerability Scanner & Security Posture Auditor
- Aligned with Certiport IT Specialist: Cybersecurity Objectives{COLOR_RESET}
+ Automated Reconnaissance & Defense Assessment System{COLOR_RESET}
 """
     print(banner)
 
@@ -77,7 +77,7 @@ def print_cli_summary(report: HostScanReport):
     # TLS Status
     if report.tls_audit and report.tls_audit.has_tls:
         tls = report.tls_audit
-        print(f"{COLOR_BOLD}SSL/TLS CRYPTOGRAPHIC STATUS (Certiport 1.4):{COLOR_RESET}")
+        print(f"{COLOR_BOLD}SSL/TLS CRYPTOGRAPHIC POSTURE & PKI AUDIT:{COLOR_RESET}")
         print(f"  Negotiated Protocol: {COLOR_CYAN}{tls.tls_version}{COLOR_RESET}")
         print(f"  Cipher Suite:        {tls.cipher_name}")
         print(f"  Certificate Subject: {tls.subject}")
@@ -91,7 +91,7 @@ def print_cli_summary(report: HostScanReport):
 
     # Vulnerabilities List
     if report.vulnerabilities:
-        print(f"{COLOR_BOLD}SECURITY FINDINGS & RISK RANKINGS (Certiport 4.3):{COLOR_RESET}")
+        print(f"{COLOR_BOLD}SECURITY FINDINGS & RISK CLASSIFICATIONS:{COLOR_RESET}")
         for v in report.vulnerabilities:
             sev_color = COLOR_RED if v.severity in ("CRITICAL", "HIGH") else (COLOR_YELLOW if v.severity == "MEDIUM" else COLOR_BLUE)
             print(f"  {sev_color}[{v.severity}]{COLOR_RESET} {COLOR_BOLD}{v.title}{COLOR_RESET} (Port: {v.port or 'Host'}, CVSS: {v.cvss_estimate})")
@@ -193,7 +193,7 @@ def generate_html_report(report: HostScanReport, output_path: str):
         status_badge = '<span class="badge badge-critical">EXPIRED</span>' if tls.is_expired else '<span class="badge badge-open">VALID</span>'
         tls_html = f"""
         <div class="card" style="margin-top: 1.5rem;">
-            <div class="card-title">SSL/TLS Cryptographic Audit (Certiport Domain 1.4)</div>
+            <div class="card-title">SSL/TLS Cryptographic Posture & PKI Audit</div>
             <div class="grid-2">
                 <div class="info-group">
                     <span class="label">Certificate Status</span>
@@ -553,7 +553,7 @@ def generate_html_report(report: HostScanReport, output_path: str):
                 <div class="score-desc">{score_label}</div>
             </div>
             <div class="card">
-                <div class="card-title">Risk Findings Breakdown (Certiport Domain 4.3)</div>
+                <div class="card-title">Risk Findings & Severity Breakdown</div>
                 <div class="stats-grid">
                     <div class="stat-box">
                         <div class="count" style="color: var(--accent-red);">{crit_count}</div>
@@ -603,7 +603,7 @@ def generate_html_report(report: HostScanReport, output_path: str):
         </div>
 
         <footer>
-            Generated automatically by <strong>VigilScan v1.0.0</strong> • Aligned with Certiport IT Specialist: Cybersecurity Exam Objectives (Domains 1, 2, 4).
+            Generated automatically by <strong>VigilScan v1.0.0</strong> • Automated Network Security Posture & Vulnerability Assessment.
         </footer>
     </div>
 </body>

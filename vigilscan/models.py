@@ -24,7 +24,7 @@ class PortResult:
 
 @dataclass
 class TlsAuditResult:
-    """Detailed SSL/TLS cryptographic audit result (Certiport Domain 1.4)."""
+    """Detailed SSL/TLS cryptographic audit result."""
     has_tls: bool = False
     subject: str = ""
     issuer: str = ""

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
 VigilScan - Lightweight Network Vulnerability Scanner & Posture Auditor
-Entrypoint CLI.
-Aligned with Certiport IT Specialist: Cybersecurity Exam Objectives.
+Entrypoint CLI for Perimeter Security Auditing & Network Reconnaissance.
 """
 
 import sys
